@@ -18,6 +18,7 @@ var (
 	listenPort = "0"
 	LogLevel   = uint8(2)
 	pprofPort  = "0"
+	args       []string
 )
 
 // Arguments passed to startup of Plugin
@@ -37,11 +38,13 @@ type Arg struct {
 // getArgs returns plugin args or default ones
 func getArgs() error {
 	pluginArg := &Arg{}
-	if os.Args[1] == "" {
+	if len(args) == 0 || os.Args[0] == "" {
+		// return returns if no arg or empty arg is provided
 		return nil
 	}
-	err := json.Unmarshal([]byte(os.Args[1]), pluginArg)
+	err := json.Unmarshal([]byte(args[0]), pluginArg)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 

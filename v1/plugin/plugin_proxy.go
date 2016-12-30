@@ -37,6 +37,8 @@ var (
 	PingTimeoutDurationDefault = time.Millisecond * 1500
 	// How many successive PingTimeouts must occur to equal a failure.
 	PingTimeoutLimit = 3
+	// Communicates when the plugin should be halted (killchan)
+	HaltChan chan struct{}
 )
 
 type pluginProxy struct {
@@ -47,10 +49,11 @@ type pluginProxy struct {
 }
 
 func newPluginProxy(plugin Plugin) *pluginProxy {
+	HaltChan = make(chan struct{})
 	return &pluginProxy{
 		plugin:              plugin,
 		PingTimeoutDuration: PingTimeoutDurationDefault,
-		halt:                make(chan struct{}),
+		halt:                HaltChan,
 	}
 }
 
@@ -82,7 +85,7 @@ func (p *pluginProxy) HeartbeatWatch() {
 	for {
 		if time.Since(p.LastPing) >= p.PingTimeoutDuration {
 			count++
-			fmt.Printf("Heartbeat timeout %v of %v.  (Duration between checks %v)", count, PingTimeoutLimit, p.PingTimeoutDuration)
+			fmt.Printf("Heartbeat timeout %v of %v.  (Duration between checks %v)\n", count, PingTimeoutLimit, p.PingTimeoutDuration)
 			if count >= PingTimeoutLimit {
 				fmt.Println("Heartbeat timeout expired!")
 				defer close(p.halt)
