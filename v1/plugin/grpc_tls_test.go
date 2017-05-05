@@ -25,6 +25,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -34,6 +35,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/urfave/cli"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -137,6 +139,15 @@ func newGrpcOptsBuilder() *grpcOptsBuilder {
 }
 
 func TestIncorrectPluginArgsFail(t *testing.T) {
+	// The tests below are designed to recover from a panic so we interpret
+	// the return code and panic if the grpc server could not be created.
+	cli.OsExiter = func(ret int) {
+		// a return code of 2 indicates a failure to build the grpc server
+		if ret == 2 {
+			panic(errors.New("failed to create grpc server in test"))
+		}
+		os.Exit(ret)
+	}
 	Convey("Intending to start secure plugin server", t, func() {
 		setUpSecureTestcase(true, true)
 		Convey("omitting Cert Path from arguments will make plugin fail", func() {
