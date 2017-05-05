@@ -8,6 +8,8 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/intelsdi-x/snap-plugin-lib-go/v1/plugin/rpc"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -49,6 +51,11 @@ func (p *StreamProxy) GetMetricTypes(ctx context.Context, arg *rpc.GetMetricType
 }
 
 func (p *StreamProxy) StreamMetrics(stream rpc.StreamCollector_StreamMetricsServer) error {
+	log.WithFields(
+		log.Fields{
+			"_block": "StreamMetrics",
+		},
+	).Debug("streaming started")
 	if stream == nil {
 		return errors.New("Stream metrics server is nil")
 	}
@@ -61,10 +68,12 @@ func (p *StreamProxy) StreamMetrics(stream rpc.StreamCollector_StreamMetricsServ
 	// Metrics out of the plugin into snap.
 	outChan := make(chan []Metric)
 
-	err := p.plugin.StreamMetrics(inChan, outChan, errChan)
-	if err != nil {
-		return err
-	}
+	go func() {
+		err := p.plugin.StreamMetrics(inChan, outChan, errChan)
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	go p.metricSend(outChan, stream)
 	go p.errorSend(errChan, stream)
@@ -89,6 +98,11 @@ func (p *StreamProxy) errorSend(errChan chan string, stream rpc.StreamCollector_
 }
 
 func (p *StreamProxy) metricSend(ch chan []Metric, stream rpc.StreamCollector_StreamMetricsServer) {
+	log.WithFields(
+		log.Fields{
+			"_block": "metricSend",
+		},
+	).Debug("sending metrics")
 	metrics := []*rpc.Metric{}
 
 	for {
@@ -129,11 +143,16 @@ func (p *StreamProxy) metricSend(ch chan []Metric, stream rpc.StreamCollector_St
 }
 
 func (p *StreamProxy) streamRecv(ch chan []Metric, stream rpc.StreamCollector_StreamMetricsServer) {
+	log.WithFields(
+		log.Fields{
+			"_block": "streamRecv",
+		},
+	).Debug("receiving metrics")
 	for {
 		s, err := stream.Recv()
 		if err != nil {
 			fmt.Println(err)
-			continue
+			return
 		}
 		if s != nil {
 			if s.MaxMetricsBuffer > 0 {
