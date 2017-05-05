@@ -454,7 +454,7 @@ func startPlugin(c *cli.Context) error {
 		pluginProxy = &proxy.pluginProxy
 		server, meta, err = buildGRPCServer(collectorType, appArgs.name, appArgs.version, arg, appArgs.opts...)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		rpc.RegisterCollectorServer(server, proxy)
 	case Processor:
@@ -465,7 +465,7 @@ func startPlugin(c *cli.Context) error {
 		pluginProxy = &proxy.pluginProxy
 		server, meta, err = buildGRPCServer(processorType, appArgs.name, appArgs.version, arg, appArgs.opts...)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		rpc.RegisterProcessorServer(server, proxy)
 	case Publisher:
@@ -476,7 +476,7 @@ func startPlugin(c *cli.Context) error {
 		pluginProxy = &proxy.pluginProxy
 		server, meta, err = buildGRPCServer(publisherType, appArgs.name, appArgs.version, arg, appArgs.opts...)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		rpc.RegisterPublisherServer(server, proxy)
 	case StreamCollector:
@@ -489,7 +489,7 @@ func startPlugin(c *cli.Context) error {
 		pluginProxy = &proxy.pluginProxy
 		server, meta, err = buildGRPCServer(publisherType, appArgs.name, appArgs.version, arg, appArgs.opts...)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		rpc.RegisterStreamCollectorServer(server, proxy)
 	default:
