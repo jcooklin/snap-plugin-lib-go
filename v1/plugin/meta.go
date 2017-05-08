@@ -133,8 +133,8 @@ func newMeta(plType pluginType, name string, version int, opts ...MetaOpt) *meta
 		Type:             plType,
 		ConcurrencyCount: defaultConcurrencyCount,
 		RoutingStrategy:  LRURouter,
-		RPCType:          2, // GRPC type
-		RPCVersion:       1, // This is v1 lib
+		RPCType:          gRPC, // GRPC type
+		RPCVersion:       1,    // This is v1 lib
 		// Unsecure is a legacy value not used for grpc, but needed to avoid
 		// calling SetKey needlessly.
 		Unsecure: true,

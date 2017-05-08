@@ -98,6 +98,10 @@ func TestPlugin(t *testing.T) {
 			i := StartCollector(newMockCollector(), "collector", 0, Exclusive(true), RoutingStrategy(1))
 			So(i, ShouldEqual, 0)
 		})
+		Convey("stream collector plugin should start successfully", func() {
+			i := StartStreamCollector(newMockStreamer(), "collector", 1)
+			So(i, ShouldEqual, 0)
+		})
 		Convey("processor plugin should start successfully", func() {
 			j := StartProcessor(newMockProcessor(), "processor", 1, Exclusive(false))
 			So(j, ShouldEqual, 0)

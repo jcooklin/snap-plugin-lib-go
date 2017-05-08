@@ -402,6 +402,8 @@ func StartStreamCollector(plugin StreamCollector, name string, version int, opts
 	appArgs.plugin = plugin
 	appArgs.name = name
 	appArgs.version = version
+	//set gRPCStream as RPC type
+	opts = append(opts, rpcType(gRPCStream))
 	appArgs.opts = opts
 	app.Version = strconv.Itoa(version)
 	app.Usage = "a Snap collector"
@@ -487,7 +489,7 @@ func startPlugin(c *cli.Context) error {
 			maxMetricsBuffer:   defaultMaxMetricsBuffer,
 		}
 		pluginProxy = &proxy.pluginProxy
-		server, meta, err = buildGRPCServer(publisherType, appArgs.name, appArgs.version, arg, appArgs.opts...)
+		server, meta, err = buildGRPCServer(collectorType, appArgs.name, appArgs.version, arg, appArgs.opts...)
 		if err != nil {
 			return cli.NewExitError(err, 2)
 		}
