@@ -158,16 +158,16 @@ func (p *StreamProxy) streamRecv(ch chan []Metric, stream rpc.StreamCollector_St
 			if s != nil {
 				if s.MaxMetricsBuffer > 0 {
 					logger.WithFields(log.Fields{
-						"option": "max_collect_duration",
+						"option": "max-metrics-buffer",
 						"value":  s.MaxMetricsBuffer,
-					}).Debug("setting max collect duration option")
+					}).Debug("setting max metrics buffer option")
 					p.setMaxMetricsBuffer(s.MaxMetricsBuffer)
 				}
 				if s.MaxCollectDuration > 0 {
 					logger.WithFields(log.Fields{
-						"option": "max_metrics_buffer",
+						"option": "max-collect-duration",
 						"value":  fmt.Sprintf("seconds %v", time.Duration(s.MaxCollectDuration).Seconds()),
-					}).Debug("setting max metrics buffer option")
+					}).Debug("setting max collect duration option")
 					p.setMaxCollectDuration(time.Duration(s.MaxCollectDuration))
 				}
 				if s.Metrics_Arg != nil {

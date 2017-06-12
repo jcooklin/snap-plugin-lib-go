@@ -62,4 +62,15 @@ var (
 		Usage: "specify http port when stand-alone is set",
 		Value: 8181,
 	}
+	collectDurationStr   = "5s"
+	flMaxCollectDuration = cli.StringFlag{
+		Name:        "max-collect-duration",
+		Usage:       "sets the maximum duration (always greater than 0s) between collections before metrics are sent. Defaults to 10s what means that after 10 seconds no new metrics are received, the plugin should send whatever data it has in the buffer instead of waiting longer. (e.g. 5s)",
+		Destination: &collectDurationStr,
+	}
+
+	flMaxMetricsBuffer = cli.Int64Flag{
+		Name:  "max-metrics-buffer",
+		Usage: "maximum number of metrics the plugin is buffering before sending metrics. Defaults to zero what means send metrics immediately.",
+	}
 )
