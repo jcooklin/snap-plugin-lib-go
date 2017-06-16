@@ -76,8 +76,7 @@ func (r *RandCollector) StreamMetrics(
 	err chan string) error {
 
 	go r.streamIt(metrics_out, err)
-	go r.drainMetrics(metrics_in)
-
+	r.drainMetrics(metrics_in)
 	return nil
 }
 
